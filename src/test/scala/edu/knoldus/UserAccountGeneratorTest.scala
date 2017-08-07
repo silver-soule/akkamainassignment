@@ -2,8 +2,9 @@ package edu.knoldus
 
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import edu.knoldus.DatabaseRepo.Created
-import org.scalatest.{BeforeAndAfterAll, FunSuite, FunSuiteLike}
+import edu.knoldus.service.DatabaseRepoActor
+import edu.knoldus.service.DatabaseRepoActor.Created
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike}
 
 /**
   * Created by Neelaksh on 6/8/17.
@@ -13,7 +14,7 @@ class UserAccountGeneratorTest extends TestKit(ActorSystem("test-system")) with 
   override protected def afterAll(): Unit = {
     system.terminate()
   }
-  val databaseRepo = system.actorOf(DatabaseRepo.props)
+  val databaseRepo = system.actorOf(DatabaseRepoActor.props)
   val userAccountGenerator = system.actorOf(UserAccountGenerator.props(databaseRepo))
 
   test("check if account is generated "){
@@ -26,7 +27,7 @@ class UserAccountGeneratorTest extends TestKit(ActorSystem("test-system")) with 
   test("check if account not made") {
     userAccountGenerator ! (1234L,List("potato","c-123","silver","12345"))
     expectMsgPF(){
-      case _@ Created(1234,false) =>assert(true)
+      case _@ Created(1234,false) =>true
     }
   }
 
