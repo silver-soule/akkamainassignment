@@ -14,20 +14,21 @@ class UserAccountGeneratorTest extends TestKit(ActorSystem("test-system")) with 
   override protected def afterAll(): Unit = {
     system.terminate()
   }
+
   val databaseRepo = system.actorOf(DatabaseRepoActor.props)
   val userAccountGenerator = system.actorOf(UserAccountGenerator.props(databaseRepo))
 
-  test("check if account is generated "){
-    userAccountGenerator ! (12L,List("neelaksh","c-123","silver","12345"))
-    expectMsgPF(){
-      case Created(12,true) => true
+  test("check if account is generated ") {
+    userAccountGenerator ! List("neelaksh", "c-123", "silver", "12345")
+    expectMsgPF() {
+      case Created(1, true) => true
     }
   }
 
   test("check if account not made") {
-    userAccountGenerator ! (1234L,List("potato","c-123","silver","12345"))
-    expectMsgPF(){
-      case _@ Created(1234,false) =>true
+    userAccountGenerator ! List("potato", "c-123", "silver", "12345")
+    expectMsgPF() {
+      case _@Created(2, false) => true
     }
   }
 

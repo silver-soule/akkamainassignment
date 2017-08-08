@@ -13,21 +13,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Created by Neelaksh on 5/8/17.
   */
-class UserAccountService{
-  def createAccounts(accounts:List[List[String]],accountGeneratorRef: ActorRef):Future[List[Boolean]]= {
+class UserAccountService {
+  def createAccounts(accounts: List[List[String]], accountGeneratorRef: ActorRef): Future[Map[Long, Boolean]] = {
     implicit val timeout = Timeout(1000 seconds)
 
     val createdAccounts =
-    for{
-      account<-accounts
-      accq = (accountGeneratorRef ? account).mapTo[(Boolean)]
-    } yield accq
-    Future.sequence(createdAccounts)
+      for {
+        account <- accounts
+        accq = (accountGeneratorRef ? account).mapTo[(Long, Boolean)]
+      } yield accq
+    Future.sequence(createdAccounts).map(_.toMap)
   }
 
-  def linkAccount(accountnum:Long,billers:List[Biller],accountBillerLinker: ActorRef): Future[SuccessfulLink] ={
+  def linkAccount(accountnum: Long, billers: List[Biller], accountBillerLinker: ActorRef): Future[SuccessfulLink] = {
     implicit val timeout = Timeout(10 seconds)
-    (accountBillerLinker ? (accountnum,billers)).mapTo[SuccessfulLink]
+    (accountBillerLinker ? (accountnum, billers)).mapTo[SuccessfulLink]
   }
 
 
