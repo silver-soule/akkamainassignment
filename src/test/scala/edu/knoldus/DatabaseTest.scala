@@ -1,6 +1,6 @@
 package edu.knoldus
 
-import edu.knoldus.models.Account
+import edu.knoldus.models.{Account, Biller}
 import org.scalatest.FunSuite
 
 /**
@@ -16,11 +16,14 @@ class DatabaseTest extends FunSuite {
   val account1 = Account(1L, "Neelaksh", "c-123", "silversoule", initamount1)
   val account2 = Account(2L, "Suryansh", "b-213", "potato", initamount2)
   val account3 = Account(3L, "Suryansh", "b-213", "po", initamount2)
+  val poor = Account(4L, "Suryansh", "b-213", "pot", 0)
   db.addAccount(account1)
+  val biller = Biller("food", "panda", 1L, "food", 22L, 1, 1, 0)
 
 
   test("testUpdateAccountBalance") {
     db.updateAccountBalance(1, initamount1)
+
     assert(db.getAccountByAccountnum(1L).get.initialAmount == initamount1 * 2)
   }
 
@@ -32,6 +35,15 @@ class DatabaseTest extends FunSuite {
   test("testAddAccount") {
     assert(!db.addAccount(account2))
     assert(db.addAccount(account3))
+  }
+
+  test("testAddBiller") {
+    assert(db.addBillerToAccount(1,biller))
+  }
+
+  test("testPayBIller") {
+    db.addAccount(poor)
+    assert(!db.payBiller(4,biller))
   }
 
 }

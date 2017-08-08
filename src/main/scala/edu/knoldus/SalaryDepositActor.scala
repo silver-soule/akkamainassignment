@@ -42,5 +42,5 @@ object SalaryDepositActor {
 
   case class BillersRequest(accountNum: Long)
 
-  def props(databaseRepo: ActorRef): Props = Props(new SalaryDepositActor(databaseRepo))
+  def props(databaseRepo: ActorRef): Props = Props(classOf[SalaryDepositActor],databaseRepo)
 }

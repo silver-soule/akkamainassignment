@@ -51,6 +51,6 @@ object DatabaseRepoActor {
 
   case class SuccessfulLink(accountnum: Long, success: Boolean) extends Response
 
-  def props(): Props = Props(new DatabaseRepoActor())
+  def props(): Props = Props(classOf[DatabaseRepoActor])
 }
 

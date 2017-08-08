@@ -12,11 +12,12 @@ class LinkAccountToBillerActor(databaseRepo: ActorRef) extends Actor with ActorL
     case (accnum: Long, biller: Biller) =>
       log.info(s"linking new billers for $accnum")
       databaseRepo.forward(Link(accnum, biller))
+    case _=> sender()!false
   }
 }
 
 object LinkAccountToBillerActor {
-  def props(databaseRepo: ActorRef): Props = Props(new LinkAccountToBillerActor(databaseRepo))
+  def props(databaseRepo: ActorRef): Props = Props(classOf[LinkAccountToBillerActor],databaseRepo)
 
   case class Link(accountnum: Long, biller: Biller)
 

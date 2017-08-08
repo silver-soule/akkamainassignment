@@ -1,6 +1,7 @@
 package edu.knoldus
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
+import akka.dispatch.{BoundedMessageQueueSemantics, RequiresMessageQueue}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import edu.knoldus.UserAccountGenerator.AccountCreate
 import edu.knoldus.models.Account
@@ -10,13 +11,12 @@ import edu.knoldus.models.Account
   */
 
 object UserAccountGenerator {
-  def props(databaseRepo: ActorRef): Props = Props(new UserAccountGenerator(databaseRepo))
-
+  def props(databaseRepo: ActorRef): Props = Props( classOf[UserAccountGenerator],databaseRepo)
   case class AccountCreate(account: Account)
 
 }
 
-class UserAccountGenerator(databaseRepo: ActorRef) extends Actor with ActorLogging {
+class UserAccountGenerator(databaseRepo: ActorRef) extends Actor with ActorLogging with RequiresMessageQueue[BoundedMessageQueueSemantics] {
   /**
     *
     * @return forwards a request to database repo to check and create a new account if possible

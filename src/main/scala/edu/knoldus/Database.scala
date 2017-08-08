@@ -25,11 +25,6 @@ class Database {
     }
   }
 
-  def depositMoney(accountnum: Long, amount: Long): Boolean = {
-    accountnumToAccount.get(accountnum).fold(false) {
-      acc => this.updateAccountBalance(accountnum, amount)
-    }
-  }
 
   def updateAccountBalance(accountNum: Long, balance: Long): Boolean = {
     accountnumToAccount.get(accountNum).fold(false) { acc =>

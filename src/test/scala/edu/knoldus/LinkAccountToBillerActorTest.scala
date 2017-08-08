@@ -14,21 +14,26 @@ import org.scalatest.{BeforeAndAfterAll, FunSuite, FunSuiteLike}
 class LinkAccountToBillerActorTest extends TestKit(ActorSystem("test-system")) with FunSuiteLike
   with BeforeAndAfterAll with ImplicitSender with MockitoSugar {
 
-  val databaseRepo = TestProbe()
-  val linkAccountToBiller: ActorRef = system.actorOf(LinkAccountToBillerActor.props(databaseRepo.ref))
+  override protected def afterAll(): Unit = {
+    system.terminate()
+  }
+
+  val databaseRepo1 = TestProbe()
+  val linkAccountToBiller: ActorRef = system.actorOf(LinkAccountToBillerActor.props(databaseRepo1.ref))
   val biller = Biller("food", "panda", 1L, "food", 22L, 1, 1, 0)
   test("Testing LinkBillerToAccountActor and linking an account with a biller") {
     linkAccountToBiller ! (1L, biller)
 
-    databaseRepo.setAutoPilot((sender: ActorRef, msg: Any) => {
+    databaseRepo1.setAutoPilot((sender: ActorRef, msg: Any) => {
       val resturnMsg = msg match {
-        case _: Link => SuccessfulLink(1L, true)
+        case  Link(1L,this.biller) => true
       }
       sender ! resturnMsg
       TestActor.NoAutoPilot
     })
+
     expectMsgPF() {
-      case _@SuccessfulLink(1L, true) => true
+      case _@true => true
     }
   }
 

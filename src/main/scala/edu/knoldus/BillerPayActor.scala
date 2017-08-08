@@ -19,7 +19,7 @@ class BillerPayActor(databaseRepoActor: ActorRef) extends Actor with BillerCateg
 }
 
 object BillerPayActor {
-  def props(databaseRepoActor: ActorRef): Props = Props(new BillerPayActor(databaseRepoActor))
+  def props(databaseRepoActor: ActorRef): Props = Props(classOf[BillerPayActor],databaseRepoActor)
 }
 
 trait BillerCategories {
