@@ -32,9 +32,12 @@ class LinkAccountToBillerActorTest extends TestKit(ActorSystem("test-system")) w
       TestActor.NoAutoPilot
     })
 
-    expectMsgPF() {
-      case _@true => true
-    }
+    expectMsg(true)
+  }
+
+  test("Testing linking account to biller false") {
+    linkAccountToBiller ! (1L)
+    expectMsg(false)
   }
 
 

@@ -2,7 +2,6 @@ package edu.knoldus
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import akka.dispatch.{BoundedMessageQueueSemantics, RequiresMessageQueue}
-import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import edu.knoldus.UserAccountGenerator.AccountCreate
 import edu.knoldus.models.Account
 
@@ -11,7 +10,8 @@ import edu.knoldus.models.Account
   */
 
 object UserAccountGenerator {
-  def props(databaseRepo: ActorRef): Props = Props( classOf[UserAccountGenerator],databaseRepo)
+  def props(databaseRepo: ActorRef): Props = Props(classOf[UserAccountGenerator], databaseRepo)
+
   case class AccountCreate(account: Account)
 
 }

@@ -22,7 +22,7 @@ class SalaryDepositActor(databaseRepoActor: ActorRef) extends Actor with ActorLo
     case (name: String, accountnum: Long, amount: Long) =>
       implicit val timeout = Timeout(10 seconds)
       log.info(s"sending request to deposit salary")
-      databaseRepoActor ! Deposit(name, accountnum, amount)
+      databaseRepoActor forward Deposit(name, accountnum, amount)
       log.info(s"sending request to fetch billers")
       val billerRequest = {
         databaseRepoActor ? BillersRequest(accountnum)

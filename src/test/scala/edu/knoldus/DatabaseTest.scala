@@ -43,7 +43,8 @@ class DatabaseTest extends FunSuite {
 
   test("testPayBIller") {
     db.addAccount(poor)
-    assert(!db.payBiller(4,biller))
+    assert(db.payBiller(account1.accountNumber,biller))
+    assert(!db.payBiller(poor.accountNumber,biller))
   }
 
 }

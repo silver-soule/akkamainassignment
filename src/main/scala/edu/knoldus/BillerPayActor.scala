@@ -1,19 +1,22 @@
 package edu.knoldus
 
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import edu.knoldus.models.Biller
 
 /**
   * Created by Neelaksh on 7/8/17.
   */
-class BillerPayActor(databaseRepoActor: ActorRef) extends Actor with BillerCategories {
+class BillerPayActor(databaseRepoActor: ActorRef) extends Actor with BillerCategories with ActorLogging{
   val billerCategories: List[String] = List("phone", "electricity", "food", "car", "internet")
 
   override def receive: Receive = {
     case (accountNum: Long, biller: Biller) =>
-      biller.billerCategory contains billerCategories match {
-        case true => databaseRepoActor.forward((accountNum, biller.updateBiller()))
-        case false => sender() ! false
+      if(billerCategories contains biller.billerCategory) {
+        log.info(s"valid biller----------->\n")
+        databaseRepoActor.forward((accountNum, biller.updateBiller()))
+      }
+      else{
+        sender()!false
       }
   }
 }
