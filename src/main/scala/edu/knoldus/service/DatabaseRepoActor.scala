@@ -11,29 +11,29 @@ import edu.knoldus.service.DatabaseRepoActor._
 /**
   * Created by Neelaksh on 6/8/17.
   */
-class DatabaseRepoActor extends Database with Actor with ActorLogging {
+class DatabaseRepoActor(db: Database) extends Actor with ActorLogging {
   override def receive: Receive = {
     case uniqueAccount: AccountCreate =>
-      sender() ! Created(uniqueAccount.account.accountNumber, addAccount(uniqueAccount.account))
+      sender() ! Created(uniqueAccount.account.accountNumber, db.addAccount(uniqueAccount.account))
 
     case info: RequestAccountInfo =>
-      sender() ! getAccountByAccountnum(info.accountNum).map {
+      sender() ! db.getAccountByAccountnum(info.accountNum).map {
         acc => RespondAccountInfo(info.accountNum, acc)
       }.getOrElse(UserNotFound(info.accountNum))
 
     case info: Link =>
       log.info(s"sending link request for ${info.accountnum}")
-      sender() ! SuccessfulLink(info.accountnum, addBillerToAccount(info.accountnum, info.biller))
+      sender() ! SuccessfulLink(info.accountnum, db.addBillerToAccount(info.accountnum, info.biller))
 
     case deposit: Deposit =>
-      val deposited:Boolean= updateAccountBalance(deposit.accountNum, deposit.amount)
+      val deposited:Boolean= db.updateAccountBalance(deposit.accountNum, deposit.amount)
       if(!deposited) log.info(s"amount was not deposited to ${deposit.accountNum}")
 
     case billers: BillersRequest =>
-      sender() ! getBillersByAccountnum(billers.accountNum).getOrElse(Nil)
+      sender() ! db.getBillersByAccountnum(billers.accountNum).getOrElse(Nil)
 
     case (accountnum: Long, biller: Biller) =>
-      sender() ! payBiller(accountnum, biller)
+      sender() ! db.payBiller(accountnum, biller)
   }
 }
 
@@ -51,6 +51,6 @@ object DatabaseRepoActor {
 
   case class SuccessfulLink(accountnum: Long, success: Boolean) extends Response
 
-  def props(): Props = Props(classOf[DatabaseRepoActor])
+  def props(db:Database): Props = Props(classOf[DatabaseRepoActor],db)
 }
 
