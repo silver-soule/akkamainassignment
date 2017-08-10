@@ -27,17 +27,17 @@ class DatabaseRepoActor(db: Database) extends Actor with ActorLogging {
 
     case deposit: Deposit =>
       log.info(s"trying to deposit money to ${deposit.accountNum}")
-      if(db.updateAccountBalance(deposit.accountNum, deposit.amount)) {
+      if (db.updateAccountBalance(deposit.accountNum, deposit.amount)) {
         log.info(s"money added to ${deposit.accountNum}")
-        sender()!SuccessfulDeposit(deposit.accountNum,true)
+        sender() ! SuccessfulDeposit(deposit.accountNum, true)
       }
-      else{ log.info(s"amount was not deposited to ${deposit.accountNum}")
-        sender()!NoDeposit
-        }
+      else {
+        log.info(s"amount was not deposited to ${deposit.accountNum}")
+        sender() ! NoDeposit
+      }
 
-
-    case billers: BillersRequest =>
-      sender() ! db.getBillersByAccountnum(billers.accountNum).getOrElse(Nil)
+    case biller: BillersRequest =>
+      sender() ! db.getBillersByAccountnum(biller.accountNum).getOrElse(Nil)
 
     case (accountnum: Long, biller: Biller) =>
       sender() ! db.payBiller(accountnum, biller)
@@ -50,7 +50,7 @@ object DatabaseRepoActor {
 
   case class Created(accountnum: Long, created: Boolean)
 
-  case class RequestAccountInfo( accountNum: Long)
+  case class RequestAccountInfo(accountNum: Long)
 
   case object NoDeposit
 
@@ -60,8 +60,8 @@ object DatabaseRepoActor {
 
   case class SuccessfulLink(accountnum: Long, success: Boolean) extends Response
 
-  case class SuccessfulDeposit(accountnum:Long,success:Boolean)
+  case class SuccessfulDeposit(accountnum: Long, success: Boolean)
 
-  def props(db:Database): Props = Props(classOf[DatabaseRepoActor],db)
+  def props(db: Database): Props = Props(classOf[DatabaseRepoActor], db)
 }
 

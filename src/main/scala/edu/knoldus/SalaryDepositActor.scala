@@ -30,7 +30,7 @@ class SalaryDepositActor(databaseRepoActor: ActorRef) extends Actor with ActorLo
       billerRequest.onComplete {
         case Success(billers) =>
           log.info(s"successful retrieval of billers")
-          billers.foreach(biller => context.actorOf(BillerPayActor.props(databaseRepoActor,info)).forward(accountnum, biller))
+          billers.foreach(biller => context.actorOf(BillerPayActor.props(databaseRepoActor)).forward(accountnum, biller))
         case Failure(ex) => log.warning(s"failed to pay billers because of : $ex")
       }
   }

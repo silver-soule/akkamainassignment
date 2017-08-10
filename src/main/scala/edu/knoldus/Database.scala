@@ -54,7 +54,8 @@ class Database {
   }
 
   def payBiller(accountnum: Long, biller: Biller): Boolean = {
-    val balance = accountnumToAccount(accountnum).initialAmount
+    val invalidBalance = -1L
+    val balance = accountnumToAccount.get(accountnum).fold(invalidBalance){account=>account.initialAmount}
     if (balance > biller.amount) {
       accountnumToBiller.get(accountnum).fold(false) {
         billers =>
