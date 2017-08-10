@@ -22,7 +22,7 @@ class SalaryDepositActor(databaseRepoActor: ActorRef) extends Actor with ActorLo
     case (name: String, accountnum: Long, amount: Long) =>
       implicit val timeout = Timeout(10 seconds)
       log.info(s"sending request to deposit salary")
-      databaseRepoActor forward Deposit(name, accountnum, amount)
+      databaseRepoActor ! Deposit(name, accountnum, amount)
       log.info(s"sending request to fetch billers")
       val billerRequest = {
         databaseRepoActor ? BillersRequest(accountnum)
@@ -30,7 +30,7 @@ class SalaryDepositActor(databaseRepoActor: ActorRef) extends Actor with ActorLo
       billerRequest.onComplete {
         case Success(billers) =>
           log.info(s"successful retrieval of billers")
-          billers.foreach(biller => context.actorOf(BillerPayActor.props(databaseRepoActor)).forward(accountnum, biller))
+          billers.foreach(biller => context.actorOf(BillerPayActor.props(databaseRepoActor,info)).forward(accountnum, biller))
         case Failure(ex) => log.warning(s"failed to pay billers because of : $ex")
       }
   }
