@@ -14,7 +14,7 @@ import scala.util.{Failure, Success}
 /**
   * Created by Neelaksh on 6/8/17.
   */
-class SalaryDepositActor(databaseRepoActor: ActorRef) extends Actor with ActorLogging {
+class SalaryDepositActor(databaseRepoActor: ActorRef,billerManagerActor :ActorRef) extends Actor with ActorLogging {
   var stringToActor: mutable.Map[String, ActorRef] = mutable.Map()
 
   override def receive: Receive = {
@@ -30,7 +30,7 @@ class SalaryDepositActor(databaseRepoActor: ActorRef) extends Actor with ActorLo
       billerRequest.onComplete {
         case Success(billers) =>
           log.info(s"successful retrieval of billers")
-          billers.foreach(biller => context.actorOf(BillerPayActor.props(databaseRepoActor)).forward(accountnum, biller))
+          billers.foreach(biller => billerManagerActor.forward(accountnum,biller))//context.actorOf(BillerPayActor.props(databaseRepoActor)).forward(accountnum, biller))
         case Failure(ex) => log.warning(s"failed to pay billers because of : $ex")
       }
   }
@@ -42,5 +42,5 @@ object SalaryDepositActor {
 
   case class BillersRequest(accountNum: Long)
 
-  def props(databaseRepo: ActorRef): Props = Props(classOf[SalaryDepositActor],databaseRepo)
+  def props(databaseRepo: ActorRef,billerManager :ActorRef): Props = Props(classOf[SalaryDepositActor],databaseRepo,billerManager)
 }

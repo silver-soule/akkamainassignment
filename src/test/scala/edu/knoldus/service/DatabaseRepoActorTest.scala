@@ -1,16 +1,16 @@
 package edu.knoldus.service
 
 import akka.actor.ActorSystem
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import akka.testkit.{ImplicitSender, TestKit}
 import edu.knoldus.LinkAccountToBillerActor.Link
 import edu.knoldus.SalaryDepositActor.{BillersRequest, Deposit}
 import edu.knoldus.UserAccountGenerator.AccountCreate
 import edu.knoldus.models.{Account, Biller}
 import edu.knoldus.service.DatabaseRepoActor._
-import edu.knoldus.{Database, UserAccountGenerator}
+import edu.knoldus.{Database}
 import org.scalatest.mockito.MockitoSugar
 import org.mockito.Mockito._
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FunSuite, FunSuiteLike}
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FunSuiteLike}
 
 /**
   * Created by Neelaksh on 9/8/17.

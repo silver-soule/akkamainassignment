@@ -4,15 +4,13 @@ import akka.actor.{ActorRef, ActorSystem}
 import akka.testkit.{ImplicitSender, TestActor, TestKit, TestProbe}
 import edu.knoldus.LinkAccountToBillerActor.Link
 import edu.knoldus.models.Biller
-import edu.knoldus.service.DatabaseRepoActor.SuccessfulLink
-import org.scalatest.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfterAll, FunSuite, FunSuiteLike}
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike}
 
 /**
   * Created by Neelaksh on 8/8/17.
   */
 class LinkAccountToBillerActorTest extends TestKit(ActorSystem("test-system")) with FunSuiteLike
-  with BeforeAndAfterAll with ImplicitSender with MockitoSugar {
+  with BeforeAndAfterAll with ImplicitSender  {
 
   override protected def afterAll(): Unit = {
     system.terminate()
