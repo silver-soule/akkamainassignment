@@ -20,6 +20,7 @@ class SalaryDepositActor(databaseRepoActor: ActorRef,billerManagerActor :ActorRe
   override def receive: Receive = {
 
     case (name: String, accountnum: Long, amount: Long) =>
+      val originalSender = sender()
       implicit val timeout = Timeout(10 seconds)
       log.info(s"sending request to deposit salary")
       databaseRepoActor ! Deposit(name, accountnum, amount)
@@ -27,11 +28,12 @@ class SalaryDepositActor(databaseRepoActor: ActorRef,billerManagerActor :ActorRe
       val billerRequest = {
         databaseRepoActor ? BillersRequest(accountnum)
       }.mapTo[List[Biller]]
+      log.info(s"got $billerRequest")
       billerRequest.onComplete {
         case Success(billers) =>
           log.info(s"successful retrieval of billers")
-          billers.foreach(biller => billerManagerActor.forward(accountnum,biller))//context.actorOf(BillerPayActor.props(databaseRepoActor)).forward(accountnum, biller))
-        case Failure(ex) => log.warning(s"failed to pay billers because of : $ex")
+          billers.foreach(biller => billerManagerActor.tell((accountnum,biller),originalSender))
+        case Failure(ex) => log.error(s"failed to pay billers because of : $ex")
       }
   }
 }

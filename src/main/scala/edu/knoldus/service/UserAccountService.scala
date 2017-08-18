@@ -16,7 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class UserAccountService {
 
   def createAccounts(accounts: List[List[String]], accountGeneratorRef: ActorRef): Future[List[Created]] = {
-    implicit val timeout = Timeout(1000 seconds)
+    implicit val timeout = Timeout(10 seconds)
 
     val createdAccounts =
       for {

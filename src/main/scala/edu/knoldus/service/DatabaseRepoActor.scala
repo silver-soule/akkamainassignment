@@ -1,6 +1,7 @@
 package edu.knoldus.service
 
 import akka.actor.{Actor, ActorLogging, Props}
+import edu.knoldus.BillerPayActor.PayBiller
 import edu.knoldus.LinkAccountToBillerActor.Link
 import edu.knoldus.SalaryDepositActor.{BillersRequest, Deposit}
 import edu.knoldus.UserAccountGenerator.AccountCreate
@@ -37,16 +38,20 @@ class DatabaseRepoActor(db: Database) extends Actor with ActorLogging {
       }
 
     case biller: BillersRequest =>
-      sender() ! db.getBillersByAccountnum(biller.accountNum).getOrElse(Nil)
+      sender() ! db.getBillersByAccountnum(biller.accountNum)
 
-    case (accountnum: Long, biller: Biller) =>
-      sender() ! db.payBiller(accountnum, biller)
+    case payBiller:PayBiller =>
+      val payStatus = db.payBiller(payBiller.accoutNum, payBiller.biller)
+      log.info(s"paid biller status :$payStatus\n")
+      sender() ! PaidStatus(payBiller.accoutNum,payStatus)
   }
 }
 
 object DatabaseRepoActor {
 
   trait Response
+
+  case class PaidStatus(accountNum:Long,status:Boolean)
 
   case class Created(accountnum: Long, created: Boolean)
 
@@ -64,4 +69,3 @@ object DatabaseRepoActor {
 
   def props(db: Database): Props = Props(classOf[DatabaseRepoActor], db)
 }
-

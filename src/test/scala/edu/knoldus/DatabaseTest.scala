@@ -50,7 +50,7 @@ class DatabaseTest extends FunSuite {
     assert(!db.payBiller(account2.accountNumber,biller))
   }
 
-  test("testGetBillersByAccountnum") {
+  test("get billers by account number") {
     assert(db.getBillersByAccountnum(2L).isEmpty)
   }
 

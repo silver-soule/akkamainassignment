@@ -3,7 +3,6 @@ package edu.knoldus
 import akka.actor.{ActorRef, ActorSystem}
 import akka.testkit.{ImplicitSender, TestActor, TestKit, TestProbe}
 import edu.knoldus.UserAccountGenerator.AccountCreate
-import edu.knoldus.service.DatabaseRepoActor
 import edu.knoldus.service.DatabaseRepoActor.Created
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike}
 
@@ -15,6 +14,7 @@ import org.scalatest.{BeforeAndAfterAll, FunSuiteLike}
 
 class UserAccountGeneratorTest extends TestKit(ActorSystem("test-system")) with FunSuiteLike
   with BeforeAndAfterAll with ImplicitSender {
+
   override protected def afterAll(): Unit = {
     system.terminate()
   }

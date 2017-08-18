@@ -2,6 +2,7 @@ package edu.knoldus
 
 import akka.actor.{ActorRef, ActorSystem}
 import akka.testkit.{ImplicitSender, TestActor, TestKit, TestProbe}
+import edu.knoldus.BillerPayActor.PayBiller
 import edu.knoldus.models.Biller
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FunSuiteLike}
 
@@ -19,7 +20,7 @@ class BillerPayActorTest extends TestKit(ActorSystem("test-system")) with FunSui
 
     databaseRepo.setAutoPilot((sender: ActorRef, msg: Any) => {
       val resturnMsg = msg match {
-        case (1L, this.updatedBiller) => true
+        case PayBiller(1L, this.updatedBiller) => true
         case _ => false
       }
       sender ! resturnMsg

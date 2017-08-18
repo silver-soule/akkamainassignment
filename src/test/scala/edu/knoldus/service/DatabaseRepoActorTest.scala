@@ -2,12 +2,13 @@ package edu.knoldus.service
 
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit}
+import edu.knoldus.BillerPayActor.PayBiller
 import edu.knoldus.LinkAccountToBillerActor.Link
 import edu.knoldus.SalaryDepositActor.{BillersRequest, Deposit}
 import edu.knoldus.UserAccountGenerator.AccountCreate
 import edu.knoldus.models.{Account, Biller}
 import edu.knoldus.service.DatabaseRepoActor._
-import edu.knoldus.{Database}
+import edu.knoldus.Database
 import org.scalatest.mockito.MockitoSugar
 import org.mockito.Mockito._
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FunSuiteLike}
@@ -16,7 +17,7 @@ import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FunSuiteLike}
   * Created by Neelaksh on 9/8/17.
   */
 class DatabaseRepoActorTest extends TestKit(ActorSystem("test-system")) with FunSuiteLike
-  with BeforeAndAfterAll with ImplicitSender with MockitoSugar with BeforeAndAfter {
+  with BeforeAndAfterAll with ImplicitSender with MockitoSugar {
   override protected def afterAll(): Unit = {
     system.terminate()
   }
@@ -41,7 +42,7 @@ class DatabaseRepoActorTest extends TestKit(ActorSystem("test-system")) with Fun
     when(database.getAccountByAccountnum(accountnum)).thenReturn(Option(account1))
     databaserepoActor ! RequestAccountInfo(accountnum)
     expectMsgPF() {
-      case _@ RespondAccountInfo(accountnum,account) => true
+      case _@ RespondAccountInfo(_,_) => true
     }
   }
 
@@ -80,7 +81,7 @@ class DatabaseRepoActorTest extends TestKit(ActorSystem("test-system")) with Fun
     val accountnum = 1L
     val name = "Neelaksh"
     val amount = 1000L
-    when(database.getBillersByAccountnum(accountnum)).thenReturn(Option(List(biller)))
+    when(database.getBillersByAccountnum(accountnum)).thenReturn(List(biller))
     databaserepoActor ! BillersRequest(accountnum)
     expectMsgPF(){
       case _@List(biller)=>true
@@ -91,7 +92,7 @@ class DatabaseRepoActorTest extends TestKit(ActorSystem("test-system")) with Fun
     val accountnum = 1L
     val name = "Neelaksh"
     val amount = 1000L
-    when(database.getBillersByAccountnum(accountnum)).thenReturn(Option(Nil))
+    when(database.getBillersByAccountnum(accountnum)).thenReturn(Nil)
     databaserepoActor ! BillersRequest(accountnum)
     expectMsgPF(){
       case _@Nil=>true
@@ -99,13 +100,13 @@ class DatabaseRepoActorTest extends TestKit(ActorSystem("test-system")) with Fun
   }
 
   test("check if billers paid"){
-    val accountnum = 1L
+    val accountNum = 1L
     val name = "Neelaksh"
     val amount = 1000L
-    when(database.payBiller(accountnum,biller)).thenReturn(true)
-    databaserepoActor ! (accountnum,biller)
+    when(database.payBiller(accountNum,biller)).thenReturn(true)
+    databaserepoActor ! PayBiller(accountNum,biller)
     expectMsgPF(){
-      case _@true=>true
+      case _@PaidStatus(_,true)=>true
     }
   }
 

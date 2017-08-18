@@ -10,14 +10,14 @@ import scala.collection.mutable
   */
 class Database {
 
-  var accountnumToAccount: mutable.Map[Long, Account] = mutable.Map()
-  var usernames: mutable.Set[String] = mutable.Set()
-  var accountnumToBiller: mutable.Map[Long, List[Biller]] = mutable.Map()
+  var accountNumToAccount: mutable.Map[Long, Account] = mutable.Map()
+  var userNames: mutable.Set[String] = mutable.Set()
+  var accountNumToBiller: mutable.Map[Long, List[Biller]] = mutable.Map()
 
   def addAccount(account: Account): Boolean = {
-    if (!usernames.contains(account.userName)) {
-      accountnumToAccount += (account.accountNumber -> account)
-      usernames += account.userName
+    if (!userNames.contains(account.userName)) {
+      accountNumToAccount += (account.accountNumber -> account)
+      userNames += account.userName
       true
     }
     else {
@@ -27,39 +27,41 @@ class Database {
 
 
   def updateAccountBalance(accountNum: Long, balance: Long): Boolean = {
-    accountnumToAccount.get(accountNum).fold(false) { acc =>
-      accountnumToAccount += (accountNum -> acc.updateBalance(balance))
+    accountNumToAccount.get(accountNum).fold(false) { acc =>
+      accountNumToAccount += (accountNum -> acc.updateBalance(balance))
       true
     }
   }
 
-  def getBillersByAccountnum(accountnum: Long): Option[List[Biller]] = {
-    accountnumToBiller.get(accountnum)
+  def getBillersByAccountnum(accountnum: Long): List[Biller] = {
+    accountNumToBiller.get(accountnum).fold(List[Biller]()){billers=>billers}
   }
 
   def getAccountByAccountnum(accountnum: Long): Option[Account] = {
-    accountnumToAccount.get(accountnum)
+    accountNumToAccount.get(accountnum)
   }
 
   def addBillerToAccount(accountnum: Long, biller: Biller): Boolean = {
-    accountnumToBiller.get(accountnum)
-      .fold {
-        accountnumToBiller += (accountnum -> List(biller))
-      } {
-        currentBillers =>
-          val allBillers = biller :: currentBillers
-          accountnumToBiller += (accountnum -> allBillers)
-      }
-    true
+    accountNumToAccount.get(accountnum).fold(false) { _ =>
+      accountNumToBiller.get(accountnum)
+        .fold {
+          accountNumToBiller += (accountnum -> List(biller))
+        } {
+          currentBillers =>
+            val allBillers = biller :: currentBillers
+            accountNumToBiller += (accountnum -> allBillers)
+        }
+      true
+    }
   }
 
   def payBiller(accountnum: Long, biller: Biller): Boolean = {
     val invalidBalance = -1L
-    val balance = accountnumToAccount.get(accountnum).fold(invalidBalance){account=>account.initialAmount}
+    val balance = accountNumToAccount.get(accountnum).fold(invalidBalance){ account=>account.initialAmount}
     if (balance > biller.amount) {
-      accountnumToBiller.get(accountnum).fold(false) {
+      accountNumToBiller.get(accountnum).fold(false) {
         billers =>
-          accountnumToBiller += (accountnum -> (biller :: billers.filter(_.billerCategory != biller.billerCategory)))
+          accountNumToBiller += (accountnum -> (biller :: billers.filter(_.billerCategory != biller.billerCategory)))
           true
       }
     }

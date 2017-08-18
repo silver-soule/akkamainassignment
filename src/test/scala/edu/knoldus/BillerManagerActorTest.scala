@@ -1,7 +1,8 @@
 package edu.knoldus
 
-import akka.actor.ActorSystem
-import akka.testkit.{ImplicitSender, TestKit}
+import akka.actor.{ActorRef, ActorSystem}
+import akka.testkit.{ImplicitSender, TestActor, TestKit}
+import edu.knoldus.BillerPayActor.PayBiller
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FunSuiteLike}
 
@@ -11,8 +12,9 @@ import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FunSuiteLike}
 class BillerManagerActorTest extends TestKit(ActorSystem("test-system")) with FunSuiteLike
   with BeforeAndAfterAll with ImplicitSender with MockitoSugar with BeforeAndAfter {
 
+
   test("test pay biller in food category") {
 
-  }
 
-}
+
+}}
