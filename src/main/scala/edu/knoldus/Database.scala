@@ -10,9 +10,9 @@ import scala.collection.mutable
   */
 class Database {
 
-  var accountNumToAccount: mutable.Map[Long, Account] = mutable.Map()
-  var userNames: mutable.Set[String] = mutable.Set()
-  var accountNumToBiller: mutable.Map[Long, List[Biller]] = mutable.Map()
+  private val accountNumToAccount: mutable.Map[Long, Account] = mutable.Map()
+  private val userNames: mutable.Set[String] = mutable.Set()
+  private val accountNumToBiller: mutable.Map[Long, List[Biller]] = mutable.Map()
 
   def addAccount(account: Account): Boolean = {
     if (!userNames.contains(account.userName)) {
@@ -24,7 +24,6 @@ class Database {
       false
     }
   }
-
 
   def updateAccountBalance(accountNum: Long, balance: Long): Boolean = {
     accountNumToAccount.get(accountNum).fold(false) { acc =>
